@@ -1,6 +1,6 @@
 {
   "name": "simba-skills",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Agent skills for running self-hosted production safely: production-safe feedback loops, safe deploys, server maintenance, and hygiene for Claude Code settings and skills.",
   "author": {
     "name": "simbaTmotsi",
@@ -8,7 +8,13 @@
   },
   "repository": "https://github.com/simbaTmotsi/simba-skills",
   "license": "MIT",
-  "keywords": ["operations", "deploy", "production-safety", "claude-code", "skills"],
+  "keywords": [
+    "operations",
+    "deploy",
+    "production-safety",
+    "claude-code",
+    "skills"
+  ],
   "skills": [
     "./skills/engineering/audit-claude-settings",
     "./skills/engineering/lint-project-skills",

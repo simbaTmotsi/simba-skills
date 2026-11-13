@@ -1,6 +1,6 @@
 ---
 name: report-skill-failure
-description: Draft a compliant upstream bug report when a skill from Matt Pocock's skills repo (mattpocock/skills: tdd, diagnosing-bugs, grill-with-docs, to-spec, to-tickets, implement, code-review, and the rest) does the wrong thing in a real session. Use when the user corrects or interrupts the agent because it followed a mattpocock skill badly, when a skill's instructions were ambiguous, contradictory or unsafe and led the agent astray, or when the user says "report this skill", "file this upstream", or "that skill is broken".
+description: "Draft a compliant upstream bug report when a skill from Matt Pocock's skills repo (mattpocock/skills: tdd, diagnosing-bugs, grill-with-docs, to-spec, to-tickets, implement, code-review, and the rest) does the wrong thing in a real session. Use when the user corrects or interrupts the agent because it followed a mattpocock skill badly, when a skill's instructions were ambiguous, contradictory or unsafe and led the agent astray, or when the user says \"report this skill\", \"file this upstream\", or \"that skill is broken\"."
 ---
 
 # Report a skill failure upstream

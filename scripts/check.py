@@ -58,6 +58,10 @@ for d in skill_dirs:
         fail(skill_md, "missing `description`")
     elif len(desc.group(1).strip().strip("\"'")) > 1024:
         fail(skill_md, "description is over 1024 characters")
+    for line in fm.splitlines():
+        kv = re.match(r"^([A-Za-z_-]+):\s+(.*)$", line)
+        if kv and kv.group(2) and kv.group(2)[0] not in "\"'[{|>" and (": " in kv.group(2) or " #" in kv.group(2)):
+            fail(skill_md, f"frontmatter `{kv.group(1)}` contains ': ' or ' #' unquoted; wrap the value in double quotes")
     user_invoked = re.search(r"^disable-model-invocation:\s*true\s*$", fm, re.M) is not None
     yaml_path = f"{d}/agents/openai.yaml"
     if not os.path.exists(yaml_path):

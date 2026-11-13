@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.1 (2026-11-13)
+
+- **report-skill-failure**: quote the description so YAML parsers read it correctly.
+- Contributor instructions moved to `AGENTS.md` (imported by `.claude/CLAUDE.md`), so the plugin root no longer ships a `CLAUDE.md`.
+- CI now fails on unquoted frontmatter values that contain `: ` or ` #`.
+
 ## 0.1.0 (2026-11-13)
 
 First release.
