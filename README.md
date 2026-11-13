@@ -75,6 +75,23 @@ The repo includes an eval suite in [`evals/`](./evals) that runs Claude Code on 
 
 It's a small suite (Claude Code 2.1.323, November 2026), so treat it as a sanity check rather than a benchmark. Run it yourself with `claude plugin eval .` from the repo root.
 
+## Data and privacy
+
+simba-skills has no server and collects nothing. Everything runs on your machine, as you. What the skills touch:
+
+**Reads and stores (on your machine only)**
+
+- `server-maintenance` backs up your Postgres databases. The backups are full copies, so they contain whatever your databases hold, including any personal data of your users. They are written only to a folder on your server that you choose, and old ones are deleted on the schedule you set.
+- `report-skill-failure` reads your agent session transcripts to describe what went wrong, and saves a redacted draft to `~/.claude/skill-failure-reports/`.
+- `audit-claude-settings`, `lint-project-skills`, `safe-deploy` and `production-safe-loops` read your settings, project files, env files and logs to do their checks. Secret values are masked in anything they show.
+
+**Sends off your machine (only when you set it up or approve it)**
+
+- **Alerts to a notification service you choose.** `server-maintenance` can send short alerts (disk nearly full, backup failed) to an [ntfy](https://ntfy.sh)-compatible URL, only if you set `NTFY_URL`. An alert contains the server's hostname plus either its disk usage and the names of its largest container logs, or the names of the database containers whose backup failed. Never database contents.
+- **GitHub issues.** `report-skill-failure` posts a redacted bug report to `github.com/mattpocock/skills` through your own GitHub CLI login, only after you explicitly say yes.
+
+Nothing else leaves your machine. No analytics, no telemetry.
+
 ## Good to know
 
 - **Nothing risky happens silently.** Every step that deletes, deploys, pushes or installs a scheduled job asks you first.
