@@ -90,7 +90,7 @@ simba-skills has no server and collects nothing. Everything runs on your machine
 - **Alerts to a notification service you choose.** `server-maintenance` can send short alerts (disk nearly full, backup failed) to an [ntfy](https://ntfy.sh)-compatible URL, only if you set `NTFY_URL`. An alert contains the server's hostname plus either its disk usage and the names of its largest container logs, or the names of the database containers whose backup failed. Never database contents.
 - **GitHub issues.** `report-skill-failure` posts a redacted bug report to `github.com/mattpocock/skills` through your own GitHub CLI login, only after you explicitly say yes.
 
-Nothing else leaves your machine. No analytics, no telemetry.
+Nothing else leaves your machine. No analytics, no telemetry. Full details: [Privacy policy](./PRIVACY.md).
 
 ## Good to know
 

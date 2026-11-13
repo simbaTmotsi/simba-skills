@@ -22,5 +22,6 @@
     "./skills/engineering/report-skill-failure",
     "./skills/operations/safe-deploy",
     "./skills/operations/server-maintenance"
-  ]
+  ],
+  "privacyPolicyUrl": "https://github.com/simbaTmotsi/simba-skills/blob/main/PRIVACY.md"
 }
