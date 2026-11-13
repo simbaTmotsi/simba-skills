@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 Routine care for a single self-hosted Linux host running Docker: scheduled Postgres backups, an hourly disk alert, weekly Docker cleanup, all installed via cron, plus a hardening review.
 
-The scripts in [scripts/](scripts/) are generic and configured by environment variables (each documents its own at the top). The full review lives in [references/docker-hardening-checklist.md](references/docker-hardening-checklist.md).
+Four generic scripts do the work, configured by environment variables (each documents its own at the top). They ship as Markdown in [scripts/](scripts/) (`pg-backup.sh.md` and so on) because the plugin directory does not accept executable files; step 2 extracts them. The full review lives in [references/docker-hardening-checklist.md](references/docker-hardening-checklist.md).
 
 Investigate before changing anything. Ask the user before every step marked **(ask)**.
 
@@ -29,26 +29,35 @@ Look for existing backup, alert or cleanup jobs before adding new ones. If somet
 
 Agree with the user on a directory for the scripts (for example `~/server-maintenance`), a backup directory (`$BACKUP_DIR`) and a log directory. Prefer a backup location on a different disk from Docker's data; if there is only one disk, say so and recommend an off-host copy.
 
-Copy the scripts there and `chmod +x` them. Keep any per-host settings in a small env file next to them (for example `maintenance.env`, mode 600), not in the scripts.
+Extract the scripts there, from this skill's folder. Extract with `awk`, which copies exactly the lines between the two fence lines; never retype the code.
+
+```bash
+dir=<chosen directory>; mkdir -p "$dir"
+for s in pg-backup.sh pg-restore-test.sh disk-alert.sh docker-maintenance.sh; do
+  awk '/^````/{f=!f; next} f' "scripts/$s.md" > "$dir/$s" && chmod 700 "$dir/$s"
+done
+```
+
+Show the user the list of extracted files and offer to show any of them before the first run. Keep any per-host settings in a small env file next to them (for example `maintenance.env`, mode 600), not in the scripts.
 
 ## 3. Postgres backups
 
-`scripts/pg-backup.sh` finds every running Postgres container by image, runs `pg_dumpall` with the container's own credentials, gzips, verifies with `gzip -t`, and prunes to `KEEP` dumps per container only after a verified dump.
+`<dir>/pg-backup.sh` finds every running Postgres container by image, runs `pg_dumpall` with the container's own credentials, gzips, verifies with `gzip -t`, and prunes to `KEEP` dumps per container only after a verified dump.
 
 1. Run it once with `DRY_RUN=1` to show which containers it finds and what it would prune.
 2. Estimate the disk budget: latest dump size times `KEEP`, per container. Set `KEEP_OVERRIDES` for large databases. Use `INCLUDE_REGEX` or `EXCLUDE_REGEX` if some containers should be skipped.
 3. Run it for real once and check the log and `ls -la $BACKUP_DIR/*/`.
-4. Offer a restore test: `scripts/pg-restore-test.sh <dump> <image matching the server's major version>`. It uses a throwaway container with no published ports and removes it afterwards.
+4. Offer a restore test: `<dir>/pg-restore-test.sh <dump> <image matching the server's major version>`. It uses a throwaway container with no published ports and removes it afterwards.
 
 Pruning deletes old backups. **(ask)** before the first real run if existing dumps would be pruned.
 
 ## 4. Disk alert
 
-`scripts/disk-alert.sh` is silent below `THRESHOLD` (default 80) and, above it, logs the usage and the largest container logs, and posts to `NTFY_URL` if set. Test it once with `THRESHOLD=1` so the user sees an alert arrive.
+`<dir>/disk-alert.sh` is silent below `THRESHOLD` (default 80) and, above it, logs the usage and the largest container logs, and posts to `NTFY_URL` if set. Test it once with `THRESHOLD=1` so the user sees an alert arrive.
 
 ## 5. Weekly Docker cleanup
 
-`scripts/docker-maintenance.sh` prunes old build cache and dangling images. It does not touch volumes unless `PRUNE_VOLUMES=1`, and even then only anonymous volumes on Engine 23+. Never add `docker system prune -a` or `docker volume prune --all`: they remove tagged rollback images and named data volumes.
+`<dir>/docker-maintenance.sh` prunes old build cache and dangling images. It does not touch volumes unless `PRUNE_VOLUMES=1`, and even then only anonymous volumes on Engine 23+. Never add `docker system prune -a` or `docker volume prune --all`: they remove tagged rollback images and named data volumes.
 
 Run it with `DRY_RUN=1` first and show the output. **(ask)** before the first real run.
 

@@ -75,21 +75,21 @@ Apply with `docker compose up -d --force-recreate` (brief downtime; ask first).
 
 ## 4. Postgres backups
 
-Use `scripts/pg-backup.sh`. The traps it avoids:
+Use `pg-backup.sh` (extracted in step 2 of the skill). The traps it avoids:
 
 - Never `docker exec -t` when piping a dump: the pseudo-TTY corrupts or truncates output.
 - Read credentials inside the container, never hard-code them.
-- Verify with `gzip -t`, and periodically prove a restore with `scripts/pg-restore-test.sh`.
+- Verify with `gzip -t`, and periodically prove a restore with `pg-restore-test.sh`.
 - Retention is a disk budget: size it from dump size times copies kept.
 - Backups on the same disk as the database protect against mistakes, not disk loss. Copy them off the host too.
 
 ## 5. Disk alert
 
-`scripts/disk-alert.sh` hourly, warning at 80%. Test once by running it with `THRESHOLD=1`.
+`disk-alert.sh` hourly, warning at 80%. Test once by running it with `THRESHOLD=1`.
 
 ## 6. Weekly housekeeping
 
-`scripts/docker-maintenance.sh`. Also cap build cache in `daemon.json`:
+`docker-maintenance.sh`. Also cap build cache in `daemon.json`:
 
 ```json
 "builder": { "gc": { "enabled": true, "defaultKeepStorage": "10GB" } }

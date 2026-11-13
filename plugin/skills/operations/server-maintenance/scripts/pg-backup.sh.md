@@ -1,3 +1,8 @@
+# pg-backup.sh
+
+This is the source of `pg-backup.sh`, kept as Markdown because the plugin directory does not accept executable files from unverified publishers. Do not retype it. Extract it exactly with the command in this skill's `SKILL.md`, which copies everything between the two fence lines below.
+
+````bash
 #!/usr/bin/env bash
 # pg-backup.sh: dump every running Postgres container, gzip it, verify the
 # archive, and keep the newest N dumps per container.
@@ -95,3 +100,4 @@ fi
 
 echo "===== done (exit $fail) ====="
 exit "$fail"
+````

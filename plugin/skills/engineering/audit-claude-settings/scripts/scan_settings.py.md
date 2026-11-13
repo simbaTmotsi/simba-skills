@@ -1,3 +1,8 @@
+# scan_settings.py
+
+This is the source of `scan_settings.py`, kept as Markdown because the plugin directory does not accept executable files from unverified publishers. Do not retype it. Extract it exactly with the command in this skill's `SKILL.md`, which copies everything between the two fence lines below.
+
+````python
 #!/usr/bin/env python3
 """Scan Claude Code settings files for risky permission rules.
 
@@ -198,3 +203,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+````

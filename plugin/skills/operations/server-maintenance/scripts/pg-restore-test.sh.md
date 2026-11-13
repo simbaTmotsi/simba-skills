@@ -1,3 +1,8 @@
+# pg-restore-test.sh
+
+This is the source of `pg-restore-test.sh`, kept as Markdown because the plugin directory does not accept executable files from unverified publishers. Do not retype it. Extract it exactly with the command in this skill's `SKILL.md`, which copies everything between the two fence lines below.
+
+````bash
 #!/usr/bin/env bash
 # pg-restore-test.sh: prove a dump actually restores. Starts a throwaway
 # Postgres container (no published ports, no named volume), loads the dump,
@@ -44,3 +49,4 @@ done
 echo "restored $total user tables from $DUMP"
 [ "$total" -ge "$MIN_TABLES" ] || { echo "RESTORE TEST FAILED"; exit 1; }
 echo "RESTORE TEST OK"
+````

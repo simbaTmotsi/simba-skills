@@ -1,6 +1,6 @@
 # Checks and fixes
 
-Each check, as [scripts/lint_skills.py](scripts/lint_skills.py) reports it, with the fix to suggest. Apply a fix only after the user approves it.
+Each check, as the scanner ([scripts/lint_skills.py.md](scripts/lint_skills.py.md)) reports it, with the fix to suggest. Apply a fix only after the user approves it.
 
 ## loose-file (will not load)
 

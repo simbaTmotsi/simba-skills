@@ -20,9 +20,20 @@ Ask which of these to audit; default to all that exist. Managed (enterprise) set
 
 Each file may hold `permissions.allow`, `permissions.ask`, `permissions.deny` and `permissions.additionalDirectories`. Audit all four.
 
+## Helper script
+
+The scanner ships as Markdown at [scripts/scan_settings.py.md](scripts/scan_settings.py.md), because the plugin directory does not accept executable files. Before step 2, extract it from this skill's folder into a directory only the user can write (never `/tmp`). Extract with `awk`, which copies exactly the lines between the two fence lines; never retype the code.
+
+```bash
+d=~/.cache/simba-skills/audit-claude-settings; mkdir -p "$d" && chmod 700 "$d"
+awk '/^````/{f=!f; next} f' scripts/scan_settings.py.md > "$d/scan_settings.py"
+```
+
+It needs only the Python standard library. Below, `$d` is that directory.
+
 ## Rules for handling secrets
 
-- **Never `cat`, `Read` or otherwise print a settings file whole.** That copies every secret into the transcript. Use [scripts/scan_settings.py](scripts/scan_settings.py), which masks values.
+- **Never `cat`, `Read` or otherwise print a settings file whole.** That copies every secret into the transcript. Use the scanner, which masks values.
 - When you quote a rule, quote the masked form. Never echo a secret back, even to confirm it.
 - Removal is by rule id (for example `allow:117`), so you never need to type the secret.
 
@@ -31,7 +42,7 @@ Each file may hold `permissions.allow`, `permissions.ask`, `permissions.deny` an
 1. **Back up.** For each file in scope, copy it beside itself with a timestamp, keeping permissions:
    `cp -p settings.json settings.json.bak-$(date +%Y%m%d-%H%M%S)`
    Tell the user where the backups are. The backups contain the same secrets, so they get deleted (or kept off any shared disk) once the user is happy.
-2. **Scan.** Run `python3 scripts/scan_settings.py scan <file>...` (script paths are relative to this skill's folder; it needs only the Python standard library). It prints a categorised report: see [CATEGORIES.md](CATEGORIES.md) for what each category means and how it is detected.
+2. **Scan.** Run `python3 "$d/scan_settings.py" scan <file>...`. It prints a categorised report: see [CATEGORIES.md](CATEGORIES.md) for what each category means and how it is detected.
 3. **Review the hits yourself.** The scanner is pattern-based. Drop obvious false positives (a rule that mentions `token` as a word, not a value) and add anything it missed that you can see in the masked output. Say which you changed and why.
 4. **Present the report** grouped by category, most dangerous first:
    1. Credentials in rules
@@ -42,10 +53,10 @@ Each file may hold `permissions.allow`, `permissions.ask`, `permissions.deny` an
 
    For each group give the ids, masked rules and a one-line reason. End with totals: rules per file, flagged per category.
 5. **Ask what to remove.** Offer sensible batches ("all credential rules", "all stale temp paths") and let the user strike individual ids. Wait for an explicit answer.
-6. **Remove.** `python3 scripts/scan_settings.py remove <file> allow:117 allow:203 ...`. The script re-reads the file, drops exactly those entries, writes it back with 2-space indentation and re-parses it. If the user's file used different formatting, say that the diff will show whitespace changes.
+6. **Remove.** `python3 "$d/scan_settings.py" remove <file> allow:117 allow:203 ...`. The script re-reads the file, drops exactly those entries, writes it back with 2-space indentation and re-parses it. If the user's file used different formatting, say that the diff will show whitespace changes.
 7. **Validate.** Re-run `scan` on the file and confirm it parses and the removed ids are gone. If anything fails, restore from the backup and stop.
 8. **Rotate.** If any credential rule was found, say plainly: **deleting the rule does not un-leak the secret.** It sat in plaintext on disk, possibly in backups, and possibly in session transcripts under `~/.claude/projects/`. Every such credential must be rotated at its source (new password, revoked token). List which services the user needs to rotate, by kind ("a database password", "an API token for the deploy service"), not by value.
-9. **Check git.** If a flagged rule lived in a committed `.claude/settings.json`, run `git log -p --follow -- .claude/settings.json` piped through the scanner's `mask` mode (`... | python3 scripts/scan_settings.py mask`) to see whether it was ever pushed. If it was, rotation is mandatory and history rewriting is the user's decision.
+9. **Check git.** If a flagged rule lived in a committed `.claude/settings.json`, run `git log -p --follow -- .claude/settings.json` piped through the scanner's `mask` mode (`... | python3 "$d/scan_settings.py" mask`) to see whether it was ever pushed. If it was, rotation is mandatory and history rewriting is the user's decision.
 
 ## Optional: consolidation proposal
 

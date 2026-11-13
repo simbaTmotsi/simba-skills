@@ -1,3 +1,8 @@
+# lint_skills.py
+
+This is the source of `lint_skills.py`, kept as Markdown because the plugin directory does not accept executable files from unverified publishers. Do not retype it. Extract it exactly with the command in this skill's `SKILL.md`, which copies everything between the two fence lines below.
+
+````python
 #!/usr/bin/env python3
 """Lint Claude Code skills and subagents. Read-only.
 
@@ -171,3 +176,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+````

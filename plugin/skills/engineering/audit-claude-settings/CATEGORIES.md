@@ -1,6 +1,6 @@
 # Finding categories
 
-What [scripts/scan_settings.py](scripts/scan_settings.py) flags, why it matters, and what to recommend. A rule can land in more than one category; the report lists it under the most dangerous one.
+What the scanner ([scripts/scan_settings.py.md](scripts/scan_settings.py.md)) flags, why it matters, and what to recommend. A rule can land in more than one category; the report lists it under the most dangerous one.
 
 ## credential
 

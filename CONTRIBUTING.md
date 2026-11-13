@@ -17,9 +17,9 @@ Pull requests without an `accepted` issue are usually closed, so agree on the pr
 
 1. Fork the repo and create a branch.
 2. Keep to one problem per pull request.
-3. Follow the conventions in [AGENTS.md](./AGENTS.md). In short: each skill is a folder with `SKILL.md` and `agents/openai.yaml`; anything destructive is user-invoked; no em dashes; no private details.
-4. Run the checks locally: `python3 scripts/check.py` (and `shellcheck` on any script you touch).
-5. Do not bump the version in `plugin.json`. The maintainer does that when releasing.
+3. Follow the conventions in [AGENTS.md](./AGENTS.md). In short: each skill is a folder under `plugin/skills/` with `SKILL.md` and `agents/openai.yaml`; scripts ship as Markdown, never as executable files; anything destructive is user-invoked; no em dashes; no private details.
+4. Run the checks locally: `python3 scripts/check.py` (it also parses and shellchecks the scripts embedded in Markdown, if `shellcheck` is installed).
+5. Do not bump the version in `plugin/.claude-plugin/plugin.json`. The maintainer does that when releasing.
 6. Fill in the pull request template, including how you tested the change in a real agent session.
 
 ## How review works

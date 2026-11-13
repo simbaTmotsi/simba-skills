@@ -11,10 +11,13 @@ import json
 import os
 import re
 import subprocess
+import shutil
 import sys
+import tempfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
+PLUGIN = "plugin"  # the folder submitted to the plugin directory
 
 failures = []
 warnings = []
@@ -43,7 +46,7 @@ def frontmatter(text):
 
 
 # 1. Skill structure and invocation pairing
-skill_dirs = sorted(os.path.dirname(p) for p in glob.glob("skills/*/*/SKILL.md"))
+skill_dirs = sorted(os.path.dirname(p) for p in glob.glob(f"{PLUGIN}/skills/*/*/SKILL.md"))
 for d in skill_dirs:
     skill_md = f"{d}/SKILL.md"
     fm, _ = frontmatter(open(skill_md, encoding="utf-8").read())
@@ -71,17 +74,18 @@ for d in skill_dirs:
         if user_invoked != policy_off:
             fail(d, "disable-model-invocation in SKILL.md and allow_implicit_invocation in agents/openai.yaml disagree")
 
-for loose in glob.glob("skills/*/*.md"):
+for loose in glob.glob(f"{PLUGIN}/skills/*/*.md"):
     if os.path.basename(loose) != "README.md":
         fail(loose, "skills must be folders with SKILL.md, not loose .md files")
 
 # 2. Manifest and READMEs list exactly the skills that exist
-plugin = json.load(open(".claude-plugin/plugin.json", encoding="utf-8"))
-listed = sorted(p.rstrip("/").removeprefix("./") for p in plugin.get("skills", []))
+PLUGIN_JSON = f"{PLUGIN}/.claude-plugin/plugin.json"
+plugin = json.load(open(PLUGIN_JSON, encoding="utf-8"))
+listed = sorted(f"{PLUGIN}/" + p.rstrip("/").removeprefix("./") for p in plugin.get("skills", []))
 if listed != skill_dirs:
-    fail(".claude-plugin/plugin.json", f"`skills` must list exactly {skill_dirs}, found {listed}")
+    fail(PLUGIN_JSON, f"`skills` must list exactly {skill_dirs}, found {listed}")
 if not re.fullmatch(r"\d+\.\d+\.\d+", str(plugin.get("version", ""))):
-    fail(".claude-plugin/plugin.json", "`version` must be MAJOR.MINOR.PATCH")
+    fail(PLUGIN_JSON, "`version` must be MAJOR.MINOR.PATCH")
 readme = open("README.md", encoding="utf-8").read()
 for d in skill_dirs:
     name = os.path.basename(d)
@@ -90,6 +94,57 @@ for d in skill_dirs:
     bucket_readme = os.path.join(os.path.dirname(d), "README.md")
     if not os.path.exists(bucket_readme) or f"./{name}/SKILL.md" not in open(bucket_readme, encoding="utf-8").read():
         fail(bucket_readme, f"does not link ./{name}/SKILL.md")
+
+market = json.load(open(".claude-plugin/marketplace.json", encoding="utf-8"))
+if [p.get("source") for p in market.get("plugins", [])] != [f"./{PLUGIN}"]:
+    fail(".claude-plugin/marketplace.json", f"the plugin's `source` must be ./{PLUGIN}")
+
+# 2b. The submitted folder holds only file types any publisher may ship
+ALLOWED_IN_PLUGIN = (".md", ".txt", ".json", ".yaml", ".yml", ".png", ".jpg", ".jpeg", ".gif", ".webp", ".ico")
+FORBIDDEN_NAMES = ("hooks.json", ".mcp.json", ".lsp.json", "monitors.json")
+for f in tracked_files():
+    if not f.startswith(f"{PLUGIN}/"):
+        continue
+    if not f.lower().endswith(ALLOWED_IN_PLUGIN):
+        fail(f, "the plugin folder may only hold Markdown, text, JSON, YAML and images; ship scripts as Markdown in a skill's scripts/ folder")
+    elif os.path.basename(f) in FORBIDDEN_NAMES:
+        fail(f, "hooks, MCP, LSP and monitor configs are not accepted from unverified publishers")
+    elif open(f, "rb").read(2) == b"#!":
+        fail(f, "files in the plugin folder must not start with #!")
+    elif "/.claude-plugin/" in f and os.path.basename(f) != "plugin.json" and not f.lower().endswith(ALLOWED_IN_PLUGIN[5:]):
+        fail(f, "only plugin.json and images belong in the plugin's .claude-plugin folder")
+
+# 2c. Scripts shipped as Markdown: exactly one fenced block, and it must parse
+FENCE = re.compile(r"^````(bash|python)\n(.*?)^````\s*$", re.M | re.S)
+script_lines = set()
+shellcheck = shutil.which("shellcheck")
+with tempfile.TemporaryDirectory() as tmp:
+    for f in sorted(glob.glob(f"{PLUGIN}/skills/*/*/scripts/*.md")):
+        text = open(f, encoding="utf-8").read()
+        blocks = list(FENCE.finditer(text))
+        if len(blocks) != 1:
+            fail(f, "script files must hold exactly one ````bash or ````python block")
+            continue
+        lang, code = blocks[0].group(1), blocks[0].group(2)
+        start = text[:blocks[0].start(2)].count("\n") + 1
+        script_lines.update((f, start + i) for i in range(code.count("\n")))
+        out = os.path.join(tmp, os.path.basename(f)[:-3])
+        open(out, "w", encoding="utf-8").write(code)
+        if lang == "python":
+            try:
+                compile(code, f, "exec")
+            except SyntaxError as e:
+                fail(f, f"embedded Python does not parse: {e}")
+        else:
+            r = subprocess.run(["bash", "-n", out], capture_output=True, text=True)
+            if r.returncode:
+                fail(f, f"embedded bash does not parse: {r.stderr.strip()}")
+            if shellcheck:
+                r = subprocess.run([shellcheck, "-S", "warning", out], capture_output=True, text=True)
+                if r.returncode:
+                    fail(f, "shellcheck warnings in the embedded script:\n" + r.stdout.strip())
+            elif os.environ.get("GITHUB_ACTIONS"):
+                fail(f, "shellcheck is not installed on the CI runner")
 
 # 3. Text hygiene and safety over every tracked text file
 TEXT_EXT = (".md", ".yml", ".yaml", ".json", ".sh", ".py", ".txt")
@@ -124,7 +179,7 @@ for f in tracked_files():
         for pattern, why in DANGEROUS:
             if pattern.search(line):
                 fail(where, f"{why}; this needs a maintainer's explicit sign-off")
-        if f.endswith((".sh", ".py")) and not line.lstrip().startswith("#"):
+        if (f.endswith((".sh", ".py")) or (f, lineno) in script_lines) and not line.lstrip().startswith("#"):
             for url in URL.findall(line):
                 if not any(h in url for h in ALLOWED_URL_HOSTS):
                     fail(where, f"script contacts a hard-coded URL ({url}); make it a setting the user supplies")

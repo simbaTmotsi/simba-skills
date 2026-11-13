@@ -16,11 +16,23 @@ Ask which to lint if it is not obvious; default to all that exist:
 
 Plugin skills are namespaced (`plugin-name:skill-name`), so they cannot collide with these; leave installed plugins alone.
 
+## Helper scripts
+
+The scanner and the drift classifier ship as Markdown in [scripts/](scripts/), because the plugin directory does not accept executable files. Before step 1, extract them from this skill's folder into a directory only the user can write (never `/tmp`). Extract with `awk`, which copies exactly the lines between the two fence lines; never retype the code.
+
+```bash
+d=~/.cache/simba-skills/lint-project-skills; mkdir -p "$d" && chmod 700 "$d"
+awk '/^````/{f=!f; next} f' scripts/lint_skills.py.md > "$d/lint_skills.py"
+awk '/^````/{f=!f; next} f' scripts/classify_copy.sh.md > "$d/classify_copy.sh" && chmod 700 "$d/classify_copy.sh"
+```
+
+Both need only the Python standard library and git. Below, `$d` is that directory.
+
 ## Procedure
 
-1. **Run the scanner.** `python3 scripts/lint_skills.py [root...]` (relative to this skill's folder; standard library only). With no arguments it scans the default roots above from the current directory. It prints a markdown table of findings.
+1. **Run the scanner.** `python3 "$d/lint_skills.py" [root...]`. With no arguments it scans the default roots above from the current directory. It prints a markdown table of findings.
 2. **Review risky-skill hits by reading them.** The scanner flags skills whose body mentions deploying, production, deleting data, pushing, publishing or sending messages. Read each flagged `SKILL.md` and keep only the ones that really perform such an action. A skill that merely *explains* deploys is not risky.
-3. **Check for copied upstream skills.** For each skill that looks copied (see [DRIFT.md](DRIFT.md) for the signs), classify it with `scripts/classify_copy.sh` as **current**, **stale copy** or **locally edited**. Ask the user for the upstream repo URL if you cannot tell. Skip symlinked skills that point into an upstream checkout: those are installs, not copies.
+3. **Check for copied upstream skills.** For each skill that looks copied (see [DRIFT.md](DRIFT.md) for the signs), classify it with `"$d/classify_copy.sh"` as **current**, **stale copy** or **locally edited**. Ask the user for the upstream repo URL if you cannot tell. Skip symlinked skills that point into an upstream checkout: those are installs, not copies.
 4. **Report** one table, most serious first:
 
    | Severity | Path | Problem | Suggested fix |

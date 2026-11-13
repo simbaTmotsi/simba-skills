@@ -1,3 +1,8 @@
+# classify_copy.sh
+
+This is the source of `classify_copy.sh`, kept as Markdown because the plugin directory does not accept executable files from unverified publishers. Do not retype it. Extract it exactly with the command in this skill's `SKILL.md`, which copies everything between the two fence lines below.
+
+````bash
 #!/usr/bin/env bash
 # Classify a copied skill folder against its upstream git repo.
 #
@@ -59,3 +64,4 @@ if [ -n "$missing" ]; then
 fi
 
 echo "OVERALL: $overall"
+````

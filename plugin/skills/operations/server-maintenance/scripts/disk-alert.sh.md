@@ -1,3 +1,8 @@
+# disk-alert.sh
+
+This is the source of `disk-alert.sh`, kept as Markdown because the plugin directory does not accept executable files from unverified publishers. Do not retype it. Extract it exactly with the command in this skill's `SKILL.md`, which copies everything between the two fence lines below.
+
+````bash
 #!/usr/bin/env bash
 # disk-alert.sh: warn well before a filesystem fills. Silent below the
 # threshold; above it, logs, names the biggest Docker container logs (the usual
@@ -33,3 +38,4 @@ for m in $MOUNTS; do
     curl -fsS -H "Title: $host disk ${use}%" -d "$msg"$'\n'"$biglogs" "$NTFY_URL" >/dev/null || true
   fi
 done
+````

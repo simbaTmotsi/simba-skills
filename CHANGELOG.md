@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.0 (2026-11-14)
+
+- **Layout:** the plugin now lives in `plugin/`, so the folder submitted to the Claude plugin directory holds only skills, docs and the manifest. Repo tooling stays at the root.
+- **Helper scripts ship as Markdown.** The seven scripts used by `server-maintenance`, `audit-claude-settings` and `lint-project-skills` are now `scripts/<name>.md` files. Each skill extracts them byte for byte with one `awk` command into a directory the user owns (never `/tmp`) before running them, so you can read every line first. Behaviour is unchanged.
+- CI checks that `plugin/` holds only allowed file types, and parses and shellchecks the embedded scripts.
+
 ## 0.1.1 (2026-11-13)
 
 - **report-skill-failure**: quote the description so YAML parsers read it correctly.

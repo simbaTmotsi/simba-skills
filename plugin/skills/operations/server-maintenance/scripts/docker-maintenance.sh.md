@@ -1,3 +1,8 @@
+# docker-maintenance.sh
+
+This is the source of `docker-maintenance.sh`, kept as Markdown because the plugin directory does not accept executable files from unverified publishers. Do not retype it. Extract it exactly with the command in this skill's `SKILL.md`, which copies everything between the two fence lines below.
+
+````bash
 #!/usr/bin/env bash
 # docker-maintenance.sh: weekly housekeeping so Docker does not silently
 # re-accumulate disk. Only removes things no container references.
@@ -48,3 +53,4 @@ fi
 
 echo "[df after]"; df -h / | awk 'NR==1 || $NF=="/"'
 echo "===== done ====="
+````

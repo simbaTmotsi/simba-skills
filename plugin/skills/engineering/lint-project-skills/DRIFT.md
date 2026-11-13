@@ -27,7 +27,7 @@ git clone --quiet <upstream-url> <scratch>/upstream
 Then, for each copied skill:
 
 ```bash
-scripts/classify_copy.sh .claude/skills/<name> <scratch>/upstream <path/of/skill/in/upstream>
+"$d/classify_copy.sh" .claude/skills/<name> <scratch>/upstream <path/of/skill/in/upstream>
 ```
 
 The script hashes each local file with `git hash-object` and looks for that blob in the upstream file's history (following renames). It prints a verdict per file and an overall verdict. For a stale copy it names the newest upstream commit whose version matches, so you can say how far behind it is. For a locally edited file it prints `git diff --no-index` against upstream's latest.

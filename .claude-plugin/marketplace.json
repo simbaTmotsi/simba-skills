@@ -8,10 +8,15 @@
   "plugins": [
     {
       "name": "simba-skills",
-      "source": "./",
+      "source": "./plugin",
       "description": "Production-safe feedback loops, safe deploys, server maintenance, and hygiene for Claude Code settings and skills.",
       "category": "operations",
-      "keywords": ["operations", "deploy", "production-safety", "claude-code"]
+      "keywords": [
+        "operations",
+        "deploy",
+        "production-safety",
+        "claude-code"
+      ]
     }
   ]
 }
