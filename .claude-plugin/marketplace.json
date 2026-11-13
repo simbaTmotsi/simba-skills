@@ -1,0 +1,17 @@
+{
+  "name": "simba-skills",
+  "owner": {
+    "name": "simbaTmotsi",
+    "url": "https://github.com/simbaTmotsi"
+  },
+  "description": "Skills for running self-hosted production safely, as an installable Claude Code plugin.",
+  "plugins": [
+    {
+      "name": "simba-skills",
+      "source": "./",
+      "description": "Production-safe feedback loops, safe deploys, server maintenance, and hygiene for Claude Code settings and skills.",
+      "category": "operations",
+      "keywords": ["operations", "deploy", "production-safety", "claude-code"]
+    }
+  ]
+}

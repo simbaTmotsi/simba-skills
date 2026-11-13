@@ -1,0 +1,5 @@
+interface:
+  display_name: "Audit Claude Settings"
+  short_description: "Find leaked secrets and stale permission rules"
+policy:
+  allow_implicit_invocation: false

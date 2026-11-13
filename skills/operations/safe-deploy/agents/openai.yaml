@@ -1,0 +1,5 @@
+interface:
+  display_name: "Safe Deploy"
+  short_description: "Deploy to production with pre-flight checks, a backup, verification and a rollback note"
+policy:
+  allow_implicit_invocation: false

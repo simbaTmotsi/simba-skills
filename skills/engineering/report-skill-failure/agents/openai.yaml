@@ -1,0 +1,3 @@
+interface:
+  display_name: "Report Skill Failure"
+  short_description: "Draft a compliant upstream bug report for a misbehaving mattpocock skill"

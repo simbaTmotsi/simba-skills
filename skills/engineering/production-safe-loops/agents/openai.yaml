@@ -1,0 +1,3 @@
+interface:
+  display_name: "Production Safe Loops"
+  short_description: "Confirm a feedback loop cannot write to production before running it"

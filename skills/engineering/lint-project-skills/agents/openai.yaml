@@ -1,0 +1,3 @@
+interface:
+  display_name: "Lint Project Skills"
+  short_description: "Find skills and agents that will not load or misbehave"

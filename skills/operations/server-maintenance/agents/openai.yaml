@@ -1,0 +1,5 @@
+interface:
+  display_name: "Server Maintenance"
+  short_description: "Set up or review backups, disk alerts and Docker cleanup on a self-hosted box"
+policy:
+  allow_implicit_invocation: false
