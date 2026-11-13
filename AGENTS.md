@@ -18,3 +18,5 @@ This repo is public. Never commit hostnames, IPs, usernames, home paths, emails,
 No em dashes anywhere in this repo's prose, and no en dashes or `--` standing in for one. Rewrite the sentence instead.
 
 Contributions are judged against `SCOPE.md` and follow `CONTRIBUTING.md`. Contributors never bump the version; the maintainer does when releasing. Run `python3 scripts/check.py` before committing; CI runs it, `shellcheck` and a secret scan on every pull request.
+
+`main` is the release channel. The Claude plugin directory auto-publishes passing versions of `main`, so every push to `main` reaches directory users within about six hours. Do day-to-day work on a branch, and push to `main` only when releasing (with the version bumped and `python3 scripts/check.py` passing). Agents never push to `main` without the maintainer's explicit approval for that push.
