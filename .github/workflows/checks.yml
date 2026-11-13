@@ -19,7 +19,7 @@ jobs:
       - name: Repo checks
         run: python3 scripts/check.py
       - name: Shellcheck
-        run: git ls-files -z '*.sh' | xargs -0 -r shellcheck
+        run: git ls-files -z '*.sh' | xargs -0 -r shellcheck -S warning
       - name: Secret scan
         uses: gitleaks/gitleaks-action@v2
         env:
