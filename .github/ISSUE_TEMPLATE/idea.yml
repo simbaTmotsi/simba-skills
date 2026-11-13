@@ -1,0 +1,31 @@
+name: Idea
+description: A gap you hit in real use. Agree on the problem here before opening a pull request.
+labels: [idea, needs-triage]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Read [SCOPE.md](https://github.com/simbaTmotsi/simba-skills/blob/main/SCOPE.md) first. Describe the problem, not a finished solution.
+  - type: textarea
+    id: situation
+    attributes:
+      label: The situation
+      description: What were you doing, and what went wrong or was missing? Real use only.
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why it matters
+      description: What could break, or what did it cost you?
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: This is not specific to one company, product or client.
+          required: true
+        - label: It cannot be done by combining the existing skills.
+          required: true

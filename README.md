@@ -70,9 +70,15 @@ To remove it: `claude plugin uninstall simba-skills@simba-skills`.
 - **Works on its own.** You don't need Matt Pocock's skills. If you have them, `production-safe-loops` also guards the loops his `tdd` and `diagnosing-bugs` skills build.
 - **Built for Linux servers running Docker.** The server and deploy skills assume Docker Compose and Postgres, and adapt to whatever deploy scripts your project already has.
 
-## Feedback
+## Contributing
 
-Found a bug or a skill that did the wrong thing? [Open an issue](https://github.com/simbaTmotsi/simba-skills/issues) with what you asked, what the agent did, and what you expected.
+Contributions are welcome when they are useful and safe. Read [SCOPE.md](./SCOPE.md) for the bar and [CONTRIBUTING.md](./CONTRIBUTING.md) for how. In short:
+
+- **A skill did the wrong thing?** [Open a bug report](https://github.com/simbaTmotsi/simba-skills/issues/new?template=bug.yml) with what you asked, what the agent did, and what you expected.
+- **Hit a gap in real use?** [Open an idea](https://github.com/simbaTmotsi/simba-skills/issues/new?template=idea.yml) before writing code.
+- **Found a security problem?** Report it privately, as described in [SECURITY.md](./SECURITY.md).
+
+Every pull request is checked automatically and reviewed by the maintainer before it can merge.
 
 ## License
 
